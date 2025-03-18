@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Scam Awareness</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Job Scam Awareness</h1>
+        <nav>
+            <ul>
+                <li><a href="#report">Report a Scam</a></li>
+                <li><a href="#database">Scam Database</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="report">
+        <h2>Report a Job Scam</h2>
+        <form id="scamReportForm">
+            <label for="company">Company Name:</label>
+            <input type="text" id="company" name="company" required>
+            
+            <label for="contact">Contact Info:</label>
+            <input type="text" id="contact" name="contact">
+            
+            <label for="description">Scam Description:</label>
+            <textarea id="description" name="description" required></textarea>
+            
+            <button type="submit">Submit Report</button>
+        </form>
+    </section>
+    
+    <section id="database">
+        <h2>Scam Database</h2>
+        <input type="text" id="search" placeholder="Search scams...">
+        <div id="scamList">
+            <!-- Dynamic scam reports will be inserted here -->
+        </div>
+    </section>
+    
+    <section id="resources">
+        <h2>Resources</h2>
+        <p>Learn how to identify and avoid job scams. Check out trusted resources:</p>
+        <ul>
+            <li><a href="https://www.ftc.gov/" target="_blank">FTC Job Scam Warnings</a></li>
+            <li><a href="https://www.bbb.org/" target="_blank">Better Business Bureau</a></li>
+        </ul>
+    </section>
+    
+    <section id="about">
+        <h2>About</h2>
+        <p>This platform was created to help college students and job seekers avoid scams.</p>
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 Job Scam Awareness. All rights reserved.</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
