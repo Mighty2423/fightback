@@ -1,42 +1,61 @@
 const express = require('express');
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+const cors = require('cors');
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Database connection
-const dbConfig = {
-    host: process.env.DB_HOST || 'mysql',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'rootpassword',
+const db = mysql.createConnection({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'user',
+    password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'scam_reports'
-};
+});
 
-async function connectDB() {
-    const connection = await mysql.createConnection(dbConfig);
-    console.log('Connected to MySQL');
-    return connection;
-}
+db.connect(err => {
+    if (err) {
+        console.error('Database connection failed:', err.stack);
+        return;
+    }
+    console.log('Connected to MySQL database');
+});
 
-// Route to submit a scam report
-app.post('/report', async (req, res) => {
-    const { company_name, job_details, description } = req.body;
-    if (!company_name || !description) {
-        return res.status(400).json({ error: 'Company name and description are required' });
-    }
-    
-    try {
-        const db = await connectDB();
-        const [company] = await db.execute('INSERT INTO companies (name) VALUES (?) ON DUPLICATE KEY UPDATE name=name', [company_name]);
-        const companyId = company.insertId || (await db.execute('SELECT id FROM companies WHERE name = ?', [company_name]))[0][0].id;
-        await db.execute('INSERT INTO scams (company_id, job_details, description) VALUES (?, ?, ?)', [companyId, job_details, description]);
-        res.status(201).json({ message: 'Scam report submitted' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Database error' });
-    }
+// API routes
+app.get('/', (req, res) => {
+    res.send('Jobliers API is running!');
+});
+
+// Endpoint to report a scam
+app.post('/report', (req, res) => {
+    const { company, alias, scam_type, description, contact_info } = req.body;
+    const query = 'INSERT INTO reports (company, alias, scam_type, description, contact_info) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [company, alias, scam_type, description, contact_info], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.status(201).json({ message: 'Scam reported successfully', reportId: result.insertId });
+    });
+});
+
+// Endpoint to retrieve all reports
+app.get('/reports', (req, res) => {
+    const query = 'SELECT * FROM reports';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
