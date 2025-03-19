@@ -1,96 +1,56 @@
-CREATE DATABASE scam_db;
+CREATE DATABASE scam_reports;
+USE scam_reports;
 
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+-- Table for scammer companies
+CREATE TABLE companies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    aliases TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE scam_reports (
-    report_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT, -- Can be NULL for anonymous reports
-    scam_title VARCHAR(255) NOT NULL,
-    scam_description TEXT NOT NULL,
-    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+-- Table for scam reports
+CREATE TABLE scams (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    company_id INT,
+    job_details TEXT,
+    description TEXT NOT NULL,
+    report_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
 
-CREATE TABLE companies (
-    company_id INT AUTO_INCREMENT PRIMARY KEY,
-    company_name VARCHAR(255) NOT NULL UNIQUE,
-    is_scam BOOLEAN DEFAULT FALSE,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Table for scam tactics used
+CREATE TABLE tactics (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
 );
 
-CREATE TABLE scam_company_links (
-    link_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    company_id INT NOT NULL,
-    times_reported INT DEFAULT 1, 
-    FOREIGN KEY (report_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE,
-    FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
+-- Linking table for scams and tactics (Many-to-Many)
+CREATE TABLE scam_tactics (
+    scam_id INT,
+    tactic_id INT,
+    PRIMARY KEY (scam_id, tactic_id),
+    FOREIGN KEY (scam_id) REFERENCES scams(id) ON DELETE CASCADE,
+    FOREIGN KEY (tactic_id) REFERENCES tactics(id) ON DELETE CASCADE
 );
 
-CREATE TABLE company_relationships (
-    relationship_id INT AUTO_INCREMENT PRIMARY KEY,
-    fake_company_id INT NOT NULL,
-    real_scam_company_id INT NOT NULL,
-    similarity_score FLOAT CHECK (similarity_score BETWEEN 0 AND 1), 
-    FOREIGN KEY (fake_company_id) REFERENCES companies(company_id) ON DELETE CASCADE,
-    FOREIGN KEY (real_scam_company_id) REFERENCES companies(company_id) ON DELETE CASCADE
-);
-
-CREATE TABLE contact_info (
-    contact_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    contact_type ENUM('email', 'phone', 'website', 'social_media') NOT NULL,
+-- Table for contact information (emails, phone numbers, websites)
+CREATE TABLE contacts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    scam_id INT,
+    contact_type ENUM('email', 'phone', 'website') NOT NULL,
     contact_value VARCHAR(255) NOT NULL,
-    FOREIGN KEY (report_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE
+    FOREIGN KEY (scam_id) REFERENCES scams(id) ON DELETE CASCADE
 );
 
-CREATE TABLE job_postings (
-    job_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    job_title VARCHAR(255),
-    salary_range VARCHAR(50),
-    job_description TEXT,
-    hiring_process TEXT, 
-    FOREIGN KEY (report_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE
+-- Table for evidence (file uploads)
+CREATE TABLE evidence (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    scam_id INT,
+    file_path VARCHAR(255) NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (scam_id) REFERENCES scams(id) ON DELETE CASCADE
 );
 
-CREATE TABLE report_similarity (
-    similarity_id INT AUTO_INCREMENT PRIMARY KEY,
-    report1_id INT NOT NULL,
-    report2_id INT NOT NULL,
-    similarity_score FLOAT CHECK (similarity_score BETWEEN 0 AND 1),
-    FOREIGN KEY (report1_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE,
-    FOREIGN KEY (report2_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE
-);
-
-CREATE TABLE user_votes (
-    vote_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    user_id INT NOT NULL,
-    vote_type ENUM('confirm', 'dispute') NOT NULL,
-    FOREIGN KEY (report_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE malware_attacks (
-    attack_id INT AUTO_INCREMENT PRIMARY KEY,
-    report_id INT NOT NULL,
-    attack_type ENUM('trojan', 'keylogger', 'phishing', 'ransomware', 'spyware', 'other') NOT NULL,
-    attack_description TEXT,
-    FOREIGN KEY (report_id) REFERENCES scam_reports(report_id) ON DELETE CASCADE
-);
-
-CREATE TABLE historical_scams (
-    history_id INT AUTO_INCREMENT PRIMARY KEY,
-    company_id INT NOT NULL,
-    previous_name VARCHAR(255),
-    previous_contact VARCHAR(255),
-    previous_attack_method TEXT,
-    archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
-);
+-- Preload common scam tactics
+INSERT INTO tactics (name) VALUES ('Phishing'), ('Malware'), ('Fake Job Posting'), ('Identity Theft'), ('Other');
