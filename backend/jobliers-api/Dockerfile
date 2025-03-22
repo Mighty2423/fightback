@@ -1,18 +1,20 @@
-# Use Node.js official image
 FROM node:18
-
-# Set working directory
 WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the application files
+# Copy application files
 COPY . .
 
-# Expose the API port
+# Ensure the container has access to environment variables
+ENV NODE_ENV=production
+ENV DB_HOST=${DB_HOST}
+ENV DB_USER=${DB_USER}
+ENV DB_PASS=${DB_PASS}
+ENV DB_NAME=${DB_NAME}
+
 EXPOSE 3000
 
-# Start the server
 CMD ["node", "server.js"]

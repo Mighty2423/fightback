@@ -42,4 +42,25 @@ CREATE TABLE IF NOT EXISTS contacts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     scam_id INT NOT NULL,
     contact_type ENUM('email', 'phone', 'website') NOT NULL,
-    contact_value VARCHAR(25
+    contact_value VARCHAR(255) NOT NULL,
+    FOREIGN KEY (scam_id) REFERENCES scams(id) ON DELETE CASCADE,
+    UNIQUE (scam_id, contact_type, contact_value)  -- Prevents duplicate contacts
+);
+
+-- Table for evidence (file uploads)
+CREATE TABLE IF NOT EXISTS evidence (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    scam_id INT NOT NULL,
+    file_path VARCHAR(255) NOT NULL,  -- Ensure file path is relative
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (scam_id) REFERENCES scams(id) ON DELETE CASCADE
+);
+
+-- Preload common scam tactics
+INSERT INTO tactics (name) VALUES 
+    ('Phishing'), 
+    ('Malware'), 
+    ('Fake Job Posting'), 
+    ('Identity Theft'), 
+    ('Other')
+ON DUPLICATE KEY UPDATE name=name;  -- Prevent duplicate insertions

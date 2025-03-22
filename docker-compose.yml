@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   database:
@@ -7,20 +8,25 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: scam_reports
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql"
+    # Only use MySQL for local development
+    profiles:
+      - dev
 
   backend:
     build: ./backend/jobliers-api
     container_name: scam_backend
     restart: always
     environment:
-      DB_HOST: database
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: scam_reports
+      DB_HOST: ${DB_HOST:-database}  # Uses 'database' for local, RDS for prod
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-scam_reports}
     ports:
       - "3000:3000"
     depends_on:
@@ -37,4 +43,3 @@ services:
 
 volumes:
   mysql_data:
-
