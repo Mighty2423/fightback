@@ -1,0 +1,62 @@
+CREATE DATABASE IF NOT EXISTS jobliers_db;
+USE jobliers_db;
+
+-- Table to store reported scams
+CREATE TABLE reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    company_id INT,
+    alias_id INT,
+    scam_type_id INT,
+    description TEXT,
+    contact_info VARCHAR(255),
+    report_count INT DEFAULT 1,
+    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id),
+    FOREIGN KEY (alias_id) REFERENCES aliases(id),
+    FOREIGN KEY (scam_type_id) REFERENCES scam_types(id)
+);
+
+-- Table to store companies associated with scams
+CREATE TABLE companies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Table to store aliases used by scam companies
+CREATE TABLE aliases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    company_id INT,
+    alias_name VARCHAR(255) UNIQUE NOT NULL,
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+);
+
+-- Table to store different scam techniques
+CREATE TABLE scam_types (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Table to track scam frequency and similarity
+CREATE TABLE scam_similarity (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    scam_1_id INT,
+    scam_2_id INT,
+    similarity_score FLOAT CHECK (similarity_score BETWEEN 0 AND 1),
+    FOREIGN KEY (scam_1_id) REFERENCES reports(id),
+    FOREIGN KEY (scam_2_id) REFERENCES reports(id)
+);
+
+-- Table to track cyber attack methods (e.g., trojans, phishing)
+CREATE TABLE attack_methods (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    method_name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Linking scams to attack methods used
+CREATE TABLE scam_attack_methods (
+    scam_id INT,
+    attack_method_id INT,
+    FOREIGN KEY (scam_id) REFERENCES reports(id),
+    FOREIGN KEY (attack_method_id) REFERENCES attack_methods(id),
+    PRIMARY KEY (scam_id, attack_method_id)
+);
