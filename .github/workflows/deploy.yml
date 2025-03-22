@@ -1,0 +1,37 @@
+
+name: Deploy to Amazon Linux
+on:
+  push:
+    branches:
+      - main  # Change to your main branch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Runs the CI/CD on GitHub-hosted runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Amazon Linux EC2
+        run: |
+          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            cd /home/ec2-user/app  # Adjust your working directory
+            git pull origin main
+            npm install  # If using Node.js
+            pm2 restart server  # If using PM2 for process management
+          EOF
+
+      - name: Sync S3 (Optional)
+        run: |
+          aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1  # Change to your AWS region
