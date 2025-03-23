@@ -1,6 +1,6 @@
 services:
   database:
-    build: ../database
+    build: ./database
     container_name: scam_db
     restart: always
     environment:
@@ -16,7 +16,7 @@ services:
       - dev  # Only runs in development mode
 
   backend:
-    build: ../backend  # Corrected path
+    build: ./backend  # Corrected path
     container_name: scam_backend
     restart: always
     environment:
@@ -33,7 +33,7 @@ services:
       - prod
 
   frontend:
-    build: ../frontend
+    build: ./frontend
     container_name: scam_frontend
     restart: always
     ports:
