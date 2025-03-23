@@ -1,9 +1,10 @@
-
 name: Deploy to Amazon Linux
+
 on:
   push:
     branches:
-      - main  # Change to your main branch
+      - main  # Change to your main branch if needed
+
 jobs:
   deploy:
     runs-on: ubuntu-latest  # Runs the CI/CD on GitHub-hosted runner
@@ -15,17 +16,20 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Amazon Linux EC2
         run: |
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            cd /home/ec2-user/app  # Adjust your working directory
-            git pull origin main
-            npm install  # If using Node.js
-            pm2 restart server  # If using PM2 for process management
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            set -e  # Stop on any error
+            cd /home/ec2-user/fightback  # Ensure the correct working directory
+            git pull origin main  # Ensure it pulls from the right branch
+            npm install  # Install dependencies for Node.js
+            docker-compose down  # Stop running containers
+            docker-compose up --build -d  # Rebuild and start containers
+            pm2 restart all || pm2 start server.js --name fightback-server  # Restart server with PM2
           EOF
 
       - name: Sync S3 (Optional)
