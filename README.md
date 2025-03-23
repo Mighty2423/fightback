@@ -112,12 +112,6 @@ C:\Users\alton\source\fightback
 3. Commit your changes: `git commit -m "Add feature"`
 4. Push to GitHub: `git push origin feature-name`
 5. Create a Pull Request!
-
----
-
-## License
-This project is licensed under the MIT License.
-
 ---
 
 ## Contact
