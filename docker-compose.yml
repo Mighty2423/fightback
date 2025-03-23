@@ -16,7 +16,7 @@ services:
       - dev  # Only runs in development mode
 
   backend:
-    build: ../backend/jobliers-api
+    build: ../backend  # Corrected path
     container_name: scam_backend
     restart: always
     environment:
@@ -37,9 +37,13 @@ services:
     container_name: scam_frontend
     restart: always
     ports:
-      - "8080:80"
+      - "8080:80"  # Change if needed
     depends_on:
       - backend
+    profiles:
+      - dev
+      - prod
 
 volumes:
   mysql_data:
+
