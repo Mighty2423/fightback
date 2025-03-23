@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   database:
-    build: ./database
+    build: ../database
     container_name: scam_db
     restart: always
     environment:
@@ -13,27 +13,29 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql"
-    # Only use MySQL for local development
+      - mysql_data:/var/lib/mysql
     profiles:
-      - dev
+      - dev  # Only runs in development mode
 
   backend:
-    build: ./backend/jobliers-api
+    build: ../backend/jobliers-api
     container_name: scam_backend
     restart: always
     environment:
-      DB_HOST: ${DB_HOST:-database}  # Uses 'database' for local, RDS for prod
-      DB_USER: ${DB_USER:-root}
-      DB_PASSWORD: ${DB_PASSWORD:-root}
-      DB_NAME: ${DB_NAME:-scam_reports}
+      DB_HOST: ${DB_HOST}  # Use RDS endpoint in production
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     ports:
       - "3000:3000"
     depends_on:
       - database
+    profiles:
+      - dev
+      - prod
 
   frontend:
-    build: ./frontend
+    build: ../frontend
     container_name: scam_frontend
     restart: always
     ports:
