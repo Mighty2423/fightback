@@ -1,33 +1,17 @@
-services: 
-  #database:
-  #  build: ./database
-  #  container_name: scam_db
-  #  restart: always
-  #  environment:
-  #    MYSQL_ROOT_PASSWORD: root
-  #    MYSQL_DATABASE: scam_reports
-  #    MYSQL_USER: admin
-  #    MYSQL_PASSWORD: root
-  #  ports:
-  #    - "3306:3306"
-  #  volumes:
-  #    - mysql_data:/var/lib/mysql
-  #  networks:
-  #    - backend_network  # Optional: Add network for isolation
 
+services:
   backend:
     build: ./backend
     container_name: scam_backend
     restart: always
     environment:
-      DB_HOST: ${DB_HOST}  # Use RDS endpoint in production or local database if dev
+      DB_HOST: ${DB_HOST}  # Use RDS endpoint from .env
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      DB_PORT: ${PORT}  # If you have a custom port for RDS
     ports:
       - "3000:3000"
-    depends_on:
-      - database
     networks:
       - backend_network  # Optional: Add network for isolation
 
