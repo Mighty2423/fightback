@@ -1,4 +1,4 @@
-sservices:
+services:
   database:
     build: ./database
     container_name: scam_db
