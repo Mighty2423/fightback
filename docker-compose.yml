@@ -1,5 +1,3 @@
-version: '3.8'  # Ensure you're using an appropriate version of Docker Compose
-
 services: 
   database:
     build: ./database
