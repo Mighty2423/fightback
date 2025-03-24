@@ -1,4 +1,6 @@
-services:
+version: '3.8'  # Ensure you're using an appropriate version of Docker Compose
+
+services: 
   database:
     build: ./database
     container_name: scam_db
@@ -12,16 +14,15 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    profiles:
-      - dev  # Add prod profile here
-      - prod
+    networks:
+      - backend_network  # Optional: Add network for isolation
 
   backend:
     build: ./backend
     container_name: scam_backend
     restart: always
     environment:
-      DB_HOST: ${DB_HOST}  # Use RDS endpoint in production
+      DB_HOST: ${DB_HOST}  # Use RDS endpoint in production or local database if dev
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
@@ -29,9 +30,8 @@ services:
       - "3000:3000"
     depends_on:
       - database
-    profiles:
-      - dev
-      - prod
+    networks:
+      - backend_network  # Optional: Add network for isolation
 
   frontend:
     build: ./frontend
@@ -41,9 +41,12 @@ services:
       - "8080:80"
     depends_on:
       - backend
-    profiles:
-      - dev
-      - prod
+    networks:
+      - backend_network  # Optional: Add network for isolation
 
 volumes:
   mysql_data:
+
+networks:
+  backend_network:  # Create a custom network if desired for service isolation
+    driver: bridge  # Optional: Can specify other network drivers (like overlay)
