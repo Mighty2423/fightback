@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest  # Runs the CI/CD on GitHub-hosted runner
 
     steps:
+      # Step 1: Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up SSH with the private key and EC2 instance public IP
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -20,6 +22,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
+      # Step 3: Deploy to Amazon Linux EC2 instance
       - name: Deploy to Amazon Linux EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
@@ -32,10 +35,11 @@ jobs:
             pm2 restart all || pm2 start server.js --name fightback-server  # Restart server with PM2
           EOF
 
+      # Step 4 (Optional): Sync files to S3 (Optional)
       - name: Sync S3 (Optional)
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1  # Change to your AWS region
+          AWS_REGION: us-east-1  # Change to your AWS region if necessary
