@@ -1,0 +1,15 @@
+{
+    "name": "fightback-backend",
+    "version": "1.0.0",
+    "description": "Backend for FightBack job scam reporting system",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "mysql": "^2.18.1",
+      "dotenv": "^16.0.3"
+    }
+  }
+  
