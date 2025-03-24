@@ -81,3 +81,11 @@ footer {
     bottom: 0;
     width: 100%;
 }
+
+.scam-entry {
+    background: #ffefef;
+    padding: 10px;
+    border-left: 4px solid maroon;
+    margin-top: 10px;
+    border-radius: 5px;
+}
