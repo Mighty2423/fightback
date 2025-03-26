@@ -46,15 +46,4 @@ jobs:
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-east-1  # Change to your AWS region if necessary
-
-      # Step 5: Install AWS CLI on EC2 if missing
-      - name: Install AWS CLI (if missing)
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-            if ! command -v aws &> /dev/null; then
-              sudo yum install -y aws-cli
-            fi
-          EOF
