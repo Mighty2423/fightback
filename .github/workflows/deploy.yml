@@ -14,7 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up SSH with the private key and EC2 instance public IP
+      # Step 2: Authenticate with GitHub using Personal Access Token (PAT)
+      - name: Authenticate with GitHub
+        run: |
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ secrets.GITHUB_PAT }}@github.com" > ~/.git-credentials
+
+      # Step 3: Set up SSH with the private key and EC2 instance public IP
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -23,7 +29,7 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
           echo "SSH setup complete."
 
-      # Step 3: Deploy to Amazon Linux EC2 instance
+      # Step 4: Deploy to Amazon Linux EC2 instance
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
@@ -41,7 +47,7 @@ jobs:
             echo "Deployment complete."
           EOF
 
-      # Step 4 (Optional): Sync files to S3
+      # Step 5 (Optional): Sync files to S3
       - name: Sync S3 (Optional)
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
