@@ -34,7 +34,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             # Pull the latest code from the repository
-            cd /path/to/your/project  # Change to your project directory
+            cd /home/ec2-user/fightback  # Updated project directory
             git pull origin main
 
             # Build and run Docker containers
@@ -49,6 +49,7 @@ jobs:
 
       # Step 5 (Optional): Sync files to S3
       - name: Sync S3 (Optional)
+        if: success()
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
         env:
