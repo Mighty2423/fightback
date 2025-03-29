@@ -29,12 +29,26 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
           echo "SSH setup complete."
 
-      # Step 4: Deploy to Amazon Linux EC2 instance
+      # Step 4: Build project (if needed) and ensure the 'public' directory exists
+      - name: Build project and ensure public directory exists
+        run: |
+          # Example: if you're using npm to build your frontend
+          npm install
+          npm run build  # Replace with the appropriate build command for your project
+          mkdir -p ./public  # Ensure the 'public' folder is created if it doesn't exist
+          mv build/* ./public/  # Move built files to 'public' folder if applicable
+
+      # Step 5: List contents of the repository (for debugging)
+      - name: List contents of the repository
+        run: |
+          ls -alh ./public  # Check if the 'public' folder exists and its contents
+
+      # Step 6: Deploy to Amazon Linux EC2 instance
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             # Pull the latest code from the repository
-            cd /home/ec2-user/fightback  # Updated project directory
+            cd /path/to/your/project  # Change to your project directory
             git pull origin main
 
             # Build and run Docker containers
@@ -47,9 +61,8 @@ jobs:
             echo "Deployment complete."
           EOF
 
-      # Step 5 (Optional): Sync files to S3
-      - name: Sync S3 (Optional)
-        if: success()
+      # Step 7: Sync files to S3
+      - name: Sync files to S3
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
         env:
