@@ -8,7 +8,10 @@ const winston = require('winston');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://fightback-frontend.s3-website-us-east-1.amazonaws.com'
+}));
+
 
 // Logger setup
 const logger = winston.createLogger({
