@@ -10,6 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Set the working directory to the frontend source folder
+WORKDIR /app/src
+
 # Copy the rest of the frontend files into the container
 COPY . .
 
