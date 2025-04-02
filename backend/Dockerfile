@@ -29,7 +29,7 @@ RUN npm install --only=production
 COPY ./jobliers-api/ ./
 
 # Expose application port
-EXPOSE 3000
+EXPOSE 3306
 
 # Start the application
 CMD ["node", "server.js"]

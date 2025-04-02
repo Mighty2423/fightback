@@ -10,7 +10,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PORT: ${MYSQL_PORT}
     ports:
-      - "3000:3000"
+      - "3306:3306"
     networks:
       - backend_network
     volumes:
