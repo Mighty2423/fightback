@@ -49,16 +49,13 @@ jobs:
           docker-compose down
           docker-compose up -d --build
 
-          echo "EC2 deployment complete."
+          #s3 FORCE SYNC
+          aws s3 sync ./frontend/build/ s3://fightback-frontend --delete
+
+          echo "EC2 and S3 sync complete."
           EOF
 
-      - name: Sync Frontend to S3
-        run: |
-          aws s3 sync frontend/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          
 
       - name: Run Backend Tests
         run: |
