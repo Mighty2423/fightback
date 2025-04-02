@@ -16,7 +16,8 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" | tr -d '' | sed 's/\\n/\n/g' > ~/.ssh/id_rsa
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" | tr -d ' 
+          ' | sed 's/\\n/\n/g' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
 
