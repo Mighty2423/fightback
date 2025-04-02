@@ -69,6 +69,7 @@ jobs:
 
             # Optional: Run database migrations or other setup commands here
             # docker-compose exec backend npm run migrate
+            
 
             echo "Deployment complete."
           EOF
