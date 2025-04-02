@@ -25,42 +25,29 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
           set -e
-
+            
           # Install system dependencies
           sudo yum update -y
           sudo yum install -y git docker
-
-          # Remove any previous MySQL repo packages to prevent conflicts
-          sudo rm -f mysql80-community-release-el7-11.noarch.rpm || true
-          sudo rm -f /etc/yum.repos.d/mysql-community.repo || true
-              
-          # Install MySQL using native Amazon Linux 2023 packages
-          sudo dnf clean all
-          sudo dnf install -y mysql-server
-          sudo systemctl enable mysqld
-          sudo systemctl start mysqld
-
-
-
+            
           # Start and enable Docker
           sudo service docker start
           sudo usermod -aG docker ec2-user
-
+            
           # Install Docker Compose
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-
+            
           # Clone or pull project
           if [ ! -d "fightback" ]; then
             git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git fightback
           fi
-
+            
           cd fightback
           git pull origin main
-
+            
           docker-compose down
           docker-compose up -d --build
-
+            
           echo "Deployment complete."
-          EOF
 
