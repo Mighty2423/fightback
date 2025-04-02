@@ -18,7 +18,7 @@ jobs:
       - name: Authenticate with GitHub
         run: |
           git config --global credential.helper store
-          echo "https://x-access-token:${{ secrets.GITHUB_PAT }}@github.com" > ~/.git-credentials
+          echo "https://x-access-token:${{ secrets.PAT }}@github.com" > ~/.git-credentials
 
       # Step 3: Set up SSH with the private key and EC2 instance public IP
       - name: Set up SSH
