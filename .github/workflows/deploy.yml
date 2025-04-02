@@ -30,10 +30,16 @@ jobs:
           sudo yum update -y
           sudo yum install -y git docker
 
-          # Install MySQL using native Amazon Linux 2023 package
+          # Remove any previous MySQL repo packages to prevent conflicts
+          sudo rm -f mysql80-community-release-el7-11.noarch.rpm || true
+          sudo rm -f /etc/yum.repos.d/mysql-community.repo || true
+              
+          # Install MySQL using native Amazon Linux 2023 packages
+          sudo dnf clean all
           sudo dnf install -y mysql-server
           sudo systemctl enable mysqld
           sudo systemctl start mysqld
+
 
 
           # Start and enable Docker
