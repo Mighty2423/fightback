@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ./jobliers-api/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy the rest of the application
 COPY ./jobliers-api/ ./
