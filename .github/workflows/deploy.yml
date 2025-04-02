@@ -39,9 +39,13 @@ jobs:
           newgrp docker
           
           # install mysql
+          sudo amazon-linux-extras enable epel
+          sudo yum install -y openssl-devel
+
           sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
           sudo yum localinstall mysql80-community-release-el7-3.noarch.rpm -y
           sudo yum update -y
+          sudo yum install mysql -y
           sudo yum install mysql-community-server -y
           sudo systemctl start mysqld
           sudo systemctl enable mysqld
