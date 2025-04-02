@@ -4,6 +4,9 @@ FROM nginx:alpine
 # Set working directory inside the container
 WORKDIR /usr/share/nginx/html
 
+# Install dependencies
+RUN npm install
+
 # Remove default Nginx static files
 RUN rm -rf ./*
 
