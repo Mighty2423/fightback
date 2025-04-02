@@ -23,31 +23,39 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-          set -e
+            set -e
 
-          # Install system dependencies
-          sudo yum update -y
-          sudo yum install -y git docker
-          sudo dnf install -y mariadb105
+            # Install system dependencies
+            sudo yum update -y
+            sudo yum install -y git docker
+            sudo dnf install -y mariadb105
 
-          # Start and enable Docker
-          sudo systemctl start docker
-          sudo usermod -aG docker ec2-user
+            # Start and enable Docker
+            sudo systemctl start docker
+            sudo usermod -aG docker ec2-user
 
-          # Install Docker Compose
-          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+            # Install Docker Compose
+            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
 
-          # Clone or pull project
-          if [ ! -d "fightback" ]; then
-            git clone https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Mighty2423/fightback.git fightback
-          fi
+            # Clone or pull project
+            if [ ! -d "fightback" ]; then
+              git clone https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Mighty2423/fightback.git fightback
+            fi
 
-          cd ~/fightback
-          git pull https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Mighty2423/fightback.git main
+            cd fightback
+            git pull https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Mighty2423/fightback.git main
 
-          docker-compose down
-          docker-compose up -d --build
+            docker-compose down
+            docker-compose up -d --build
 
-                echo "Deployment complete."
+            echo "Deployment complete."
           EOF
+
+      - name: Sync Frontend to S3
+        run: |
+          aws s3 sync frontend/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}

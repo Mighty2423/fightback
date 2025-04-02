@@ -3,55 +3,49 @@
 ## Overview
 FightBack is a job scam awareness and tech consulting platform designed to help users identify fraudulent job postings, report scams, and access career guidance resources. This project integrates scam tracking with a consulting hub to provide insights on safe job searching, cybersecurity tips, and resume-building advice.
 
-The platform is hosted on AWS and utilizes services such as Amazon RDS, S3, EC2, and IAM roles for secure access management. FightBack aims to protect job seekers while offering expert-backed consulting on tech careers.
+The platform is fully hosted on AWS and utilizes services such as Amazon EC2 (for backend hosting), RDS (for scam report storage), S3 (for frontend static site hosting), and CloudWatch for monitoring. IAM roles are used for secure access management.
+
+FightBack aims to protect job seekers while offering expert-backed consulting on tech careers.
+
+---
 
 ## Tech Stack
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Node.js (Express.js)
-- **Database:** Amazon RDS (MySQL/PostgreSQL)
-- **Storage:** Amazon S3 (for uploaded evidence files and consulting resources)
+- **Frontend:** HTML, CSS, JavaScript (static hosted on Amazon S3)
+- **Backend:** Node.js (Express.js) running in Docker on Amazon EC2
+- **Database:** Amazon RDS (MySQL)
+- **Storage:** Amazon S3 (for static assets)
 - **Monitoring:** Amazon CloudWatch
 - **Authentication & Access Control:** AWS IAM Roles
 - **Containerization:** Docker & Docker Compose
-- **Version Control & CI/CD:** GitHub Actions & AWS CodeDeploy
+- **CI/CD Pipeline:** GitHub Actions with remote EC2 SSH deployment + S3 sync
 
 ---
 
 ## Project Structure
 ```
-C:\Users\alton\source\fightback
+fightback
 ├── .github
 │   └── workflows
-│       └── static.yml
+│       └── deploy.yml
 ├── backend
-│   ├── api
-│   │   ├── .env
-│   │   ├── Dockerfile
-│   │   └── server.js
-│   ├── services
-│   │   ├── scam-tracker.js
-│   │   ├── consulting-hub.js
-│   │   └── database.js
-│   └── nodejs (Not in use)
+│   ├── Dockerfile
+│   ├── package.json
+│   └── server.js
 ├── database
-│   ├── schema.sql  # Updated database schema for scams & consulting hub
-│   └── Dockerfile
+│   └── schema.sql
 ├── docker-compose.yml
 ├── frontend
 │   ├── css
 │   │   └── styles.css
-│   ├── Dockerfile
 │   ├── index.html
 │   ├── js
-│   │   ├── scam-reports.js  # Fetch and display scam reports
-│   │   ├── consulting.js  # Fetch and display consulting content
-│   │   └── script.js
+│   │   ├── script.js
+│   │   └── scam-reports.js
 │   └── pages
 │       ├── about.html
 │       ├── report_scam.html
-│       ├── consulting_hub.html
-│       ├── resources.html
 │       ├── scam_database.html
+│       ├── resources.html
 │       └── contact.html
 └── README.md
 ```
@@ -61,75 +55,79 @@ C:\Users\alton\source\fightback
 ## AWS Architecture
 
 ### Services Used:
-- **Amazon EC2** – Hosts the backend Node.js API.
-- **Amazon RDS** – Stores scam reports, consulting resources, and user data.
-- **Amazon S3** – Stores uploaded evidence files (images, documents) and consulting content.
-- **AWS IAM Roles** – Manages secure access to AWS services.
-- **Amazon CloudWatch** – Monitors logs and application performance.
+- **Amazon EC2** — Hosts the Dockerized Node.js backend.
+- **Amazon RDS** — MySQL database for storing scam reports.
+- **Amazon S3** — Static site hosting for the frontend HTML/CSS/JS.
+- **Amazon CloudWatch** — Application log monitoring.
+- **AWS IAM Roles** — Secure access between EC2, RDS, S3.
 
-### Connection Flow:
-1. **Frontend (HTML, CSS, JavaScript)** interacts with the backend via API requests.
-2. **Backend (Node.js on EC2)** processes requests and interacts with RDS.
-3. **Database (Amazon RDS)** stores scam reports, consulting resources, and user-generated content.
-4. **S3 Bucket** stores scam evidence and consulting materials securely.
-5. **IAM Roles** ensure secure access between AWS services.
-6. **CloudWatch** provides monitoring and logging.
+### Flow:
+1. Users interact with the **frontend** (S3 static site).
+2. Frontend makes **CORS API requests** to the **backend** on EC2.
+3. Backend connects to **Amazon RDS** to save and fetch scam data.
+4. Admins view logs via **CloudWatch**.
+5. Assets are deployed to S3 via GitHub Actions.
 
 ---
 
 ## Deployment
-### Prerequisites
-- AWS CLI installed and configured
-- Docker installed
-- GitHub repository (FightBack) set up
-- GitHub Actions for CI/CD
 
-### Steps
-1. **Clone the repository:**
-   ```sh
+### Prerequisites:
+- AWS account
+- IAM roles & EC2 key pair set up
+- GitHub secrets (SSH key, token, IP, bucket info)
+
+### Steps:
+1. Clone repository:
+   ```bash
    git clone https://github.com/yourusername/fightback.git
    cd fightback
    ```
-2. **Set up AWS services (IAM, EC2, RDS, S3, CloudWatch)**
-3. **Build and run Docker containers locally:**
-   ```sh
+2. Run locally with Docker:
+   ```bash
    docker-compose up --build
    ```
-4. **Push to GitHub to trigger CI/CD pipeline:**
-   ```sh
+3. Push to GitHub to trigger Actions deployment
+   ```bash
    git add .
-   git commit -m "Initial setup"
+   git commit -m "Deploy update"
    git push origin main
    ```
-5. **GitHub Actions deploys to AWS (EC2, RDS setup included in script)**
+4. GitHub workflow:
+   - SSH into EC2
+   - Pull latest changes
+   - Rebuild Docker containers
+   - Upload frontend to S3
 
 ---
 
 ## GitHub Actions Workflow
-- The `.github/workflows/static.yml` file automates the deployment process:
-  - **Builds** and **tests** the Node.js backend.
-  - **Pushes Docker images** to Amazon ECR.
-  - **Deploys to EC2** using AWS CodeDeploy.
-  - **Syncs files with S3** for static storage.
+- `deploy.yml` handles:
+  - Backend deployment via SSH to EC2
+  - Frontend sync to S3 with `aws s3 sync`
+  - `.env` usage and SSH key management
+  - Docker Compose orchestration
 
 ---
 
 ## Future Features
-- **AI-powered scam detection** – Analyzing patterns in scam reports.
-- **User authentication system** – Secure login for tracking submissions.
-- **Automated job posting validation** – Flagging suspicious job listings.
-- **Tech career insights & job market trends** – Data-driven job search recommendations.
+- 🔍 **Searchable scam database** with filters and tags
+- 🧠 **AI-based scam detection** engine (analyzing user reports)
+- 🧰 **Admin dashboard** for managing submissions
+- 📬 **Notification system** for scam alerts
+- 🧾 **User authentication** and profile history
 
 ---
 
 ## Contributing
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -m "Add feature"`
-4. Push to GitHub: `git push origin feature-name`
-5. Create a Pull Request!
+1. Fork the repo
+2. Create a branch: `git checkout -b feature/my-feature`
+3. Commit and push: `git commit -m "Add feature"`
+4. Open a pull request
 
 ---
 
 ## Contact
-For inquiries or contributions, contact **Alton Sanford White V**.
+For inquiries or collaboration:
+**Alton Sanford White V**
+[Project Repository](https://github.com/Mighty2423/fightback)
