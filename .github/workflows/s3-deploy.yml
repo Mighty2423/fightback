@@ -3,7 +3,7 @@ name: Deploy Frontend to S3
 on:
   push:
     branches:
-      - main  # or the branch you want to trigger on
+      - main
 
 jobs:
   deploy:
@@ -13,17 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          npm install
-          npm run build
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -32,6 +21,6 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to S3
+      - name: Deploy static frontend to S3
         run: |
-          aws s3 sync frontend s3://${{ secrets.S3_BUCKET_NAME }} --acl public-read --delete
+          aws s3 sync frontend/ s3://${{ secrets.S3_BUCKET_NAME }} --acl public-read --delete
