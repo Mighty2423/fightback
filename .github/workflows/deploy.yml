@@ -30,6 +30,12 @@ jobs:
           sudo yum update -y
           sudo yum install -y git docker
 
+          # Install MySQL using native Amazon Linux 2023 package
+          sudo dnf install -y mysql-server
+          sudo systemctl enable mysqld
+          sudo systemctl start mysqld
+
+
           # Start and enable Docker
           sudo service docker start
           sudo usermod -aG docker ec2-user
