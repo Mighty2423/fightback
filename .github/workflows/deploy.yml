@@ -27,12 +27,21 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          # Optional: Update the system packages if not there
+          sudo yum update -y
+          sudo yum install -y git
+          sudo yum install -y docker
+          sudo service docker start
+          sudo usermod -aG docker ec2-user
+          newgrp docker
+          #install docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+
             # Pull the latest code from the repository
-            cd /path/to/your/project  # Change to your project directory
+            cd fightback  # Change to your project directory
             git pull origin main
 
-            # enter the directory where docker-compose.yml is located
-            cd fightback
 
             # Build and run Docker containers
             docker-compose down
@@ -47,6 +56,7 @@ jobs:
       # Step 4 (Optional): Sync files to S3
       - name: Sync S3 (Optional)
         run: |
-          aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }} --delete
+          aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }}
+          
         env:
           AWS_REGION: us-east-1  # Change to your AWS region if necessary
