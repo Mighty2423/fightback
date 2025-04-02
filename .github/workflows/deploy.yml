@@ -34,6 +34,14 @@ jobs:
           sudo service docker start
           sudo usermod -aG docker ec2-user
           newgrp docker
+          # install sql
+          sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+          sudo yum localinstall mysql80-community-release-el7-3.noarch.rpm -y
+          sudo yum update -y
+          sudo yum install mysql-community-server -y
+          sudo systemctl start mysqld
+          sudo systemctl enable mysqld
+          
           #install docker-compose
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
@@ -57,6 +65,6 @@ jobs:
       - name: Sync S3 (Optional)
         run: |
           aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }}
-          
+
         env:
           AWS_REGION: us-east-1  # Change to your AWS region if necessary
