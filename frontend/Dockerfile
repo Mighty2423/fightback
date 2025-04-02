@@ -11,7 +11,7 @@ COPY ./frontend/package*.json ./
 RUN npm install
 
 # Copy the rest of the frontend files into the container
-COPY ./frontend .
+COPY ./frontend /app
 
 # Build the frontend (production build)
 RUN npm run build
