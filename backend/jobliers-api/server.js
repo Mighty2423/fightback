@@ -3,6 +3,7 @@ require('dotenv').config({ path: process.env.NODE_ENV === 'production' ? '.env.p
 const express = require('express');
 const mysql = require('mysql2/promise');
 const { body, validationResult } = require('express-validator');
+const cors = require('cors');
 const winston = require('winston');
 const cors = require('cors');
 
@@ -72,8 +73,6 @@ app.post('/report', [
     } catch (error) {
         logger.error(`Database error: ${error.message}`);
         res.status(500).json({ error: 'Database error' });
-    } finally {
-        if (db) db.release();
     }
 });
 
