@@ -8,8 +8,7 @@ WORKDIR /app
 COPY ./jobliers-api/package*.json ./
 
 # Install dependencies
-RUN npm install --only=production
-RUN npm install mysql2
+RUN npm ci --only=production
 
 # Copy the rest of the application
 COPY ./jobliers-api/ ./
