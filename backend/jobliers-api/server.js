@@ -8,9 +8,15 @@ const winston = require('winston');
 
 const app = express();
 app.use(express.json());
+
 app.use(cors({
-  origin: 'http://fightback-frontend.s3-website-us-east-1.amazonaws.com'
+    origin: 'http://fightback-frontend.s3-website-us-east-1.amazonaws.com',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
 }));
+
+// ... rest of your code
+
 
 
 // Logger setup
