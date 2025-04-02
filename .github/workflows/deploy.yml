@@ -1,83 +1,53 @@
-name: Deploy to Amazon Linux
+name: Deploy to Amazon EC2
 
 on:
   push:
     branches:
-      - main  # Change to your main branch if needed
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Runs the CI/CD on GitHub-hosted runner
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up SSH with the private key and EC2 instance public IP
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" | tr -d '\r' | sed 's/\\n/\n/g' > ~/.ssh/id_rsa
+          echo "${{ secrets.AWS_SSH_PRIVATE_KEY }}" | tr -d '' | sed 's/\\n/\n/g' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
-          echo "SSH setup complete."
 
-      # Step 3: Deploy to Amazon Linux EC2 instance
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-          # Optional: Update the system packages if not there
-          # install git
-          sudo yum update -y
-          sudo yum install -y git
+          set -e
 
-          # Install Docker
-          sudo yum install -y docker
+          # Install system dependencies
+          sudo yum update -y
+          sudo yum install -y git docker
+
+          # Start and enable Docker
           sudo service docker start
           sudo usermod -aG docker ec2-user
-          newgrp docker
-          
-          # install mysql
-          sudo amazon-linux-extras enable epel
-          sudo yum install -y openssl-devel
 
-          sudo wget https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
-          sudo yum localinstall mysql80-community-release-el7-3.noarch.rpm -y
-          sudo yum update -y
-          sudo yum install mysql -y
-          sudo yum install mysql-community-server -y
-          sudo systemctl start mysqld
-          sudo systemctl enable mysqld
-          sudo mysql_secure_installation
-          sudo systemctl status mysqld
-
-
-
-          #install docker-compose
+          # Install Docker Compose
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
-            # Pull the latest code from the repository
-            cd fightback  # Change to your project directory
-            git pull origin main
+          # Clone or pull project
+          if [ ! -d "fightback" ]; then
+            git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git fightback
+          fi
 
+          cd fightback
+          git pull origin main
 
-            # Build and run Docker containers
-            docker-compose down
-            docker-compose up -d --build
+          docker-compose down
+          docker-compose up -d --build
 
-            # Optional: Run database migrations or other setup commands here
-            # docker-compose exec backend npm run migrate
-            
-
-            echo "Deployment complete."
+          echo "Deployment complete."
           EOF
 
-      # Step 4 (Optional): Sync files to S3
-      - name: Sync S3 (Optional)
-        run: |
-          aws s3 sync ./public s3://${{ secrets.S3_BUCKET_NAME }}
-
-        env:
-          AWS_REGION: us-east-1  # Change to your AWS region if necessary

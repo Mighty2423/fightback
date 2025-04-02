@@ -4,9 +4,11 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const { body, validationResult } = require('express-validator');
 const winston = require('winston');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Logger setup
 const logger = winston.createLogger({
@@ -17,7 +19,7 @@ const logger = winston.createLogger({
     ]
 });
 
-// Database connection pool with error handling
+// Database connection pool
 let pool;
 (async () => {
     try {
@@ -34,7 +36,7 @@ let pool;
         logger.info('Database pool created successfully');
     } catch (error) {
         logger.error(`Database connection error: ${error.message}`);
-        process.exit(1); // Exit process if database connection fails
+        process.exit(1);
     }
 })();
 
@@ -50,32 +52,30 @@ app.post('/report', [
 
     const { company_name, job_details, description } = req.body;
 
+    let db;
     try {
-        const db = await pool.getConnection();
+        db = await pool.getConnection();
         await db.beginTransaction();
 
-        // Insert company or get existing ID
         await db.execute('INSERT IGNORE INTO companies (name) VALUES (?)', [company_name]);
         const [company] = await db.execute('SELECT id FROM companies WHERE name = ?', [company_name]);
         const companyId = company[0]?.id;
 
-        // Insert scam report
         await db.execute(
             'INSERT INTO scams (company_id, job_details, description) VALUES (?, ?, ?)',
             [companyId, job_details, description]
         );
 
         await db.commit();
-        db.release();
-
         logger.info(`Scam report submitted for company: ${company_name}`);
         res.status(201).json({ message: 'Scam report submitted' });
     } catch (error) {
         logger.error(`Database error: ${error.message}`);
         res.status(500).json({ error: 'Database error' });
+    } finally {
+        if (db) db.release();
     }
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));
