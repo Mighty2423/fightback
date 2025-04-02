@@ -11,7 +11,6 @@ RUN rm -rf ./*
 COPY ./index.html .
 COPY ./css ./css
 COPY ./js ./js
-COPY ./pages ./pages
 
 # Expose port 80 for serving the frontend
 EXPOSE 80
