@@ -2,70 +2,68 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Scam Reports</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scam Report Database</title>
+    <link rel="stylesheet" href="../css/styles.css" />
 </head>
-<header>
-    <h1>Job Scam Awareness</h1>
-    <nav>
-        <ul>
-            <li><a href="pages/report_scam.html">Report a Scam</a></li>
-            <li><a href="pages/database.html">Scam Database</a></li>
-            <li><a href="pages/resources.html">Resources</a></li>
-            <li><a href="pages/about.html">About</a></li>
-        </ul>
-</header>
+
 <body>
-    <h1>Scam Reports</h1>
-    <input type="text" id="search" placeholder="Search by company name...">
-    <div id="results"></div>
+    <header>
+        <h1>Scam Report Database</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="report_scam.html">Report a Scam</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Search Scam Reports</h2>
+        <input type="text" id="searchInput" placeholder="Search by company name..." />
+        <div id="scamList"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Job Scam Awareness. All rights reserved.</p>
+    </footer>
 
     <script>
-        const API_URL = 'http://<YOUR_EC2_IP>:<PORT>'; // ← replace this with your actual backend URL
+        const scamList = document.getElementById('scamList');
+        const searchInput = document.getElementById('searchInput');
 
-        async function fetchReports(query = '') {
+        async function fetchScams(query = '') {
+            scamList.innerHTML = '<p>Loading...</p>';
             try {
-                const res = await fetch(`${API_URL}/scams?search=${encodeURIComponent(query)}`);
-                const data = await res.json();
-                const container = document.getElementById('results');
-                container.innerHTML = '';
-
-                if (!data.length) {
-                    container.innerHTML = '<p>No scam reports found.</p>';
+                const response = await fetch(`http://<YOUR-EC2-IP>:3000/scams?search=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                if (data.length === 0) {
+                    scamList.innerHTML = '<p>No results found.</p>';
                     return;
                 }
 
-                const table = document.createElement('table');
-                table.innerHTML = `
-          <tr>
-            <th>Company</th>
-            <th>Job Details</th>
-            <th>Description</th>
-          </tr>
-        `;
-                data.forEach(report => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-            <td>${report.company_name}</td>
-            <td>${report.job_details}</td>
-            <td>${report.description}</td>
-          `;
-                    table.appendChild(row);
-                });
-
-                container.appendChild(table);
+                scamList.innerHTML = data.map(entry => `
+          <div class="scam-entry">
+            <strong>${entry.company_name}</strong><br/>
+            <em>${entry.job_details}</em><br/>
+            <p>${entry.description}</p>
+          </div>
+        `).join('');
             } catch (err) {
+                scamList.innerHTML = '<p>Error loading scam data.</p>';
                 console.error(err);
-                document.getElementById('results').innerHTML = '<p>Failed to load reports.</p>';
             }
         }
 
-        document.getElementById('search').addEventListener('input', e => {
-            fetchReports(e.target.value);
+        searchInput.addEventListener('input', () => {
+            fetchScams(searchInput.value.trim());
         });
 
-        fetchReports(); // Initial load
+        // Load on page load
+        fetchScams();
     </script>
 </body>
 

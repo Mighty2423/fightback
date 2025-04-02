@@ -28,6 +28,7 @@ jobs:
           # Install system dependencies
           sudo yum update -y
           sudo yum install -y git docker
+          sudo dnf install -y mariadb105
 
           # Start and enable Docker
           sudo systemctl start docker
