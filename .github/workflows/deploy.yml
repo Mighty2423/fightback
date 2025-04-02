@@ -31,6 +31,9 @@ jobs:
             cd /path/to/your/project  # Change to your project directory
             git pull origin main
 
+            # enter the directory where docker-compose.yml is located
+            cd fightback
+
             # Build and run Docker containers
             docker-compose down
             docker-compose up -d --build
