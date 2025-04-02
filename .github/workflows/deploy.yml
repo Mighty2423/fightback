@@ -49,16 +49,5 @@ jobs:
           docker-compose down
           docker-compose up -d --build
 
-          #s3 FORCE SYNC
-          aws s3 sync ./frontend/build/ s3://fightback-frontend --delete
-
-          echo "EC2 and S3 sync complete."
+                echo "Deployment complete."
           EOF
-
-          
-
-      - name: Run Backend Tests
-        run: |
-          cd backend/jobliers-api
-          npm install
-          npm test

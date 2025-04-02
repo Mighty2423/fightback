@@ -1,62 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Report a Scam</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
+<header>
+    <h1>Job Scam Awareness</h1>
+    <nav>
+        <ul>
+            <li><a href="pages/report_scam.html">Report a Scam</a></li>
+            <li><a href="pages/database.html">Scam Database</a></li>
+            <li><a href="pages/resources.html">Resources</a></li>
+            <li><a href="pages/about.html">About</a></li>
+        </ul>
+</header>
 <body>
-    <header>
-        <h1>Report a Job Scam</h1>
-        <nav>
-            <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="report_scam.html">Report a Scam</a></li>
-                <li><a href="resources.html">Resources</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-        </nav>
-    </header>
+    <h1>Report a Scam</h1>
 
-    <section>
-        <form id="scamReportForm">
-            <label for="company_name">Company Name:</label>
-            <input type="text" id="company_name" name="company_name" required>
+    <form id="scamForm">
+        <label>Company Name: <input type="text" name="company_name" required></label><br>
+        <label>Job Details: <input type="text" name="job_details"></label><br>
+        <label>Description:<br><textarea name="description" required></textarea></label><br>
+        <button type="submit">Submit Report</button>
+    </form>
 
-            <label for="job_details">Job Details:</label>
-            <input type="text" id="job_details" name="job_details">
-
-            <label for="description">Scam Description:</label>
-            <textarea id="description" name="description" required></textarea>
-
-            <button type="submit">Submit Report</button>
-        </form>
-        <p id="responseMessage"></p>
-    </section>
+    <p id="status"></p>
 
     <script>
-        document.getElementById('scamReportForm').addEventListener('submit', async function (e) {
+        const API_URL = 'http://<YOUR_EC2_IP>:<PORT>'; // ← replace this
+
+        document.getElementById('scamForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            const form = e.target;
             const data = {
-                company_name: document.getElementById('company_name').value,
-                job_details: document.getElementById('job_details').value,
-                description: document.getElementById('description').value
+                company_name: form.company_name.value.trim(),
+                job_details: form.job_details.value.trim(),
+                description: form.description.value.trim()
             };
 
             try {
-                const res = await fetch('http://54.92.184.220:3000/report', {
+                const res = await fetch(`${API_URL}/report`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                const result = await res.json();
-                document.getElementById('responseMessage').innerText = result.message || 'Submitted!';
+                const msg = await res.json();
+                document.getElementById('status').textContent = msg.message || 'Submitted!';
+                form.reset();
             } catch (err) {
-                document.getElementById('responseMessage').innerText = 'Submission failed.';
+                console.error(err);
+                document.getElementById('status').textContent = 'Failed to submit report.';
             }
         });
     </script>
 </body>
+
 </html>
