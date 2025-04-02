@@ -1,17 +1,17 @@
 # Use Node.js to build the frontend
 FROM node:14 AS build
 
-# Set the working directory to /app (root of your project)
+# Set the working directory to /app
 WORKDIR /app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the frontend files into the container
-COPY . .
+COPY frontend/ .
 
 # Build the frontend (production build)
 RUN npm run build

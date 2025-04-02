@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build: ./backend
@@ -10,7 +12,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PORT: ${MYSQL_PORT}
     ports:
-      - "3306:3306"
+      - "3000:3000"  # Ensure the port matches the backend port
     networks:
       - backend_network
     volumes:
@@ -29,8 +31,20 @@ services:
     networks:
       - backend_network
 
+  database:
+    build: ./database
+    container_name: scam_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      - backend_network
+
 volumes:
-  backend_logs:  # Stores backend logs
+  backend_logs:
+    driver: local
 
 networks:
   backend_network:
