@@ -5,13 +5,13 @@ FROM node:14 AS build
 WORKDIR /app
 
 # Copy the package.json and package-lock.json
-COPY ./frontend/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the frontend files into the container
-COPY ./frontend /app
+COPY . .
 
 # Build the frontend (production build)
 RUN npm run build
@@ -33,4 +33,3 @@ EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
-
