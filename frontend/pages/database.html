@@ -38,7 +38,7 @@
         async function fetchScams(query = '') {
             scamList.innerHTML = '<p>Loading...</p>';
             try {
-                const response = await fetch(`http://<YOUR-EC2-IP>:3000/scams?search=${encodeURIComponent(query)}`);
+                const response = await fetch(`http://54.92.184.220:3000/scams?search=${encodeURIComponent(query)}`);;
                 const data = await response.json();
                 if (data.length === 0) {
                     scamList.innerHTML = '<p>No results found.</p>';
