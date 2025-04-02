@@ -3,6 +3,8 @@ services:
     build: ./backend
     container_name: scam_backend
     restart: always
+    env_file:
+      - ./backend/jobliers-api/.env
     environment:
       DB_HOST: ${DB_HOST}  # Use RDS endpoint from .env
       DB_USER: ${DB_USER}
