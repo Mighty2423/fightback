@@ -5,7 +5,6 @@ const mysql = require('mysql2/promise');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const winston = require('winston');
-const cors = require('cors');
 
 const app = express();
 app.use(express.json());
