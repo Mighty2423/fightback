@@ -75,5 +75,27 @@ app.post('/report', [
     }
 });
 
+// GET all scam reports (optional search)
+app.get('/scams', async (req, res) => {
+    const search = req.query.search || '';
+    let db;
+    try {
+        db = await pool.getConnection();
+        const [results] = await db.execute(`
+      SELECT c.name AS company_name, s.job_details, s.description
+      FROM scams s
+      JOIN companies c ON s.company_id = c.id
+      WHERE c.name LIKE ?
+      ORDER BY s.id DESC
+    `, [`%${search}%`]);
+
+        res.json(results);
+    } catch (err) {
+        logger.error(`GET /scams failed: ${err.message}`);
+        res.status(500).json({ error: 'Failed to fetch scam reports' });
+    }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));

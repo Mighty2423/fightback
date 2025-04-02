@@ -3,61 +3,51 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report a Scam</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-    <header>
-        <h1>Report a Scam</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="scam_database.html">Scam Database</a></li>
-                <li><a href="resources.html">Resources</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-        </nav>
-    </header>
+    <h1>Report a Scam</h1>
 
-    <section>
-        <h2>Submit a Scam Report</h2>
-        <form id="scamForm">
-            <label for="companyName">Scammer Company Name:</label>
-            <input type="text" id="companyName" name="companyName" required>
+    <form id="scamForm">
+        <label>Company Name: <input type="text" name="company_name" required></label><br>
+        <label>Job Details: <input type="text" name="job_details"></label><br>
+        <label>Description:<br><textarea name="description" required></textarea></label><br>
+        <button type="submit">Submit Report</button>
+    </form>
 
-            <label for="aliases">Other Names Used:</label>
-            <input type="text" id="aliases" name="aliases" placeholder="Separate with commas">
+    <p id="status"></p>
 
-            <label for="contactInfo">Contact Info (Email, Phone, Website):</label>
-            <input type="text" id="contactInfo" name="contactInfo" required>
+    <script>
+        const API_URL = 'http://<YOUR_EC2_IP>:<PORT>'; // ← replace this
 
-            <label for="jobDetails">Job Posting Details (if applicable):</label>
-            <textarea id="jobDetails" name="jobDetails"></textarea>
+        document.getElementById('scamForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-            <label for="scamTactics">Scam Tactics Used:</label>
-            <select id="scamTactics" name="scamTactics">
-                <option value="phishing">Phishing</option>
-                <option value="malware">Malware</option>
-                <option value="fake_job">Fake Job Posting</option>
-                <option value="identity_theft">Identity Theft</option>
-                <option value="other">Other</option>
-            </select>
+            const form = e.target;
+            const data = {
+                company_name: form.company_name.value.trim(),
+                job_details: form.job_details.value.trim(),
+                description: form.description.value.trim()
+            };
 
-            <label for="description">Description of Scam:</label>
-            <textarea id="description" name="description" required></textarea>
+            try {
+                const res = await fetch(`${API_URL}/report`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-            <label for="evidence">Upload Evidence (screenshots, documents):</label>
-            <input type="file" id="evidence" name="evidence" accept="image/*,.pdf,.doc,.docx">
-
-            <button type="submit">Submit Report</button>
-        </form>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Job Scam Awareness. All rights reserved.</p>
-    </footer>
+                const msg = await res.json();
+                document.getElementById('status').textContent = msg.message || 'Submitted!';
+                form.reset();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('status').textContent = 'Failed to submit report.';
+            }
+        });
+    </script>
 </body>
 
 </html>

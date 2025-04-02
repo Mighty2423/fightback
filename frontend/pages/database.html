@@ -3,35 +3,61 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scam Database</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <title>Scam Reports</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-    <header>
-        <h1>Scam Database</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="report_scam.html">Report a Scam</a></li>
-                <li><a href="resources.html">Resources</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-        </nav>
-    </header>
+    <h1>Scam Reports</h1>
+    <input type="text" id="search" placeholder="Search by company name...">
+    <div id="results"></div>
 
-    <section>
-        <h2>Reported Job Scams</h2>
-        <input type="text" id="search" placeholder="Search scams...">
-        <div id="scamList"></div>
-    </section>
+    <script>
+        const API_URL = 'http://<YOUR_EC2_IP>:<PORT>'; // ← replace this with your actual backend URL
 
-    <footer>
-        <p>&copy; 2025 Job Scam Awareness. All rights reserved.</p>
-    </footer>
+        async function fetchReports(query = '') {
+            try {
+                const res = await fetch(`${API_URL}/scams?search=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                const container = document.getElementById('results');
+                container.innerHTML = '';
 
-    <script src="script.js"></script>
+                if (!data.length) {
+                    container.innerHTML = '<p>No scam reports found.</p>';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+          <tr>
+            <th>Company</th>
+            <th>Job Details</th>
+            <th>Description</th>
+          </tr>
+        `;
+                data.forEach(report => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td>${report.company_name}</td>
+            <td>${report.job_details}</td>
+            <td>${report.description}</td>
+          `;
+                    table.appendChild(row);
+                });
+
+                container.appendChild(table);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('results').innerHTML = '<p>Failed to load reports.</p>';
+            }
+        }
+
+        document.getElementById('search').addEventListener('input', e => {
+            fetchReports(e.target.value);
+        });
+
+        fetchReports(); // Initial load
+    </script>
 </body>
 
 </html>
