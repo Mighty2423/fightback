@@ -1,118 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <title>
-   Report a Scam
-  </title>
-  <link href="css/styles.css" rel="stylesheet"/>
- </head>
- <body>
-  <header>
-    <section class="centered">
-   <h1>
-    Job Scam Awareness
-   </h1>
-   <nav>
-    <ul>
-     <li>
-      <a href="index.html">
-       Home
-      </a>
-     </li>
-     <li>
-      <a href="report_scam.html">
-       Report a Scam
-      </a>
-     </li>
-     <li>
-      <a href="database.html">
-       Scam Database
-      </a>
-     </li>
-     <li>
-      <a href="resources.html">
-       Resources
-      </a>
-     </li>
-     <li>
-      <a href="consulting_hub.html">
-       Consulting Hub
-      </a>
-     </li>
-     <li>
-      <a href="about.html">
-       About
-      </a>
-     </li>
-     <li>
-      <a href="contact.html">
-       Contact
-      </a>
-     </li>
-    </ul>
-   </nav>
-  </header>
-  <h1>
-   Report a Scam
-  </h1>
-  <form id="scamForm">
-   <label>
-    Company Name:
-    <input name="company_name" required="" type="text"/>
-   </label>
-   <br/>
-   <label>
-    Job Details:
-    <input name="job_details" type="text"/>
-   </label>
-   <br/>
-   <label>
-    Description:
-    <br/>
-    <textarea name="description" required=""></textarea>
-   </label>
-   <br/>
-   <button type="submit">
-    Submit Report
-   </button>
-  </form>
-  <p id="status">
-  </p>
-</section>
-  <script>
-   const API_URL = 'http://54.92.184.220:3000'; // ← replace this
 
-        document.getElementById('scamForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report a Scam - FightBack</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+</head>
 
-            const form = e.target;
-            const data = {
-                company_name: form.company_name.value.trim(),
-                job_details: form.job_details.value.trim(),
-                description: form.description.value.trim()
-            };
+<body>
+    <header>
+        <h1>Report a Job Scam</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="scam_database.html">Scam Database</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="consulting_hub.html">Consulting Hub</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-            try {
-                const res = await fetch(`${API_URL}/report`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+    <section>
+        <h2>Submit a Scam Report</h2>
+        <form id="scamReportForm">
+            <label for="company">Company Name:</label>
+            <input type="text" id="company" name="company_name" required />
 
-                const msg = await res.json();
-                document.getElementById('status').textContent = msg.message || 'Submitted!';
-                form.reset();
-            } catch (err) {
-                console.error(err);
-                document.getElementById('status').textContent = 'Failed to submit report.';
-            }
-        });
-  </script>
-  <footer>
-   <p>
-    © 2025 Job Scam Awareness. All rights reserved.
-   </p>
-  </footer>
- </body>
+            <label for="job_details">Job Details:</label>
+            <input type="text" id="job_details" name="job_details" />
+
+            <label for="description">Scam Description:</label>
+            <textarea id="description" name="description" required></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="formMessage"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 FightBack. All rights reserved.</p>
+    </footer>
+
+    <script src="../js/script.js"></script>
+</body>
+
 </html>
