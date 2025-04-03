@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scam Report Database</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-<header>
-    <h1>Listed known faudsters</h1>
-    <nav>
-        <ul>
-            <li><a href="../index.html">Home</a></li>
-            <li><a href="report_scam.html">Report a Scam</a></li>
-            <li><a href="scam_database.html">Scam Database</a></li>
-            <li><a href="resources.html">Resources</a></li>
-            <li><a href="consulting_hub.html">Consulting</a></li>
-            <li><a href="about.html">About</a></li>
-        </ul>
-    </nav>
-</header>
-    <section>
-        <h2>Search Scam Reports</h2>
-        <input type="text" id="searchInput" placeholder="Search by company name..." />
-        <div id="scamList"></div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Job Scam Awareness. All rights reserved.</p>
-    </footer>
-
-    <script>
-        const scamList = document.getElementById('scamList');
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Scam Report Database
+  </title>
+  <link href="css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <header>
+   <h1>
+    Job Scam Awareness
+   </h1>
+   <nav>
+    <ul>
+     <li>
+      <a href="index.html">
+       Home
+      </a>
+     </li>
+     <li>
+      <a href="report_scam.html">
+       Report a Scam
+      </a>
+     </li>
+     <li>
+      <a href="database.html">
+       Scam Database
+      </a>
+     </li>
+     <li>
+      <a href="resources.html">
+       Resources
+      </a>
+     </li>
+     <li>
+      <a href="consulting_hub.html">
+       Consulting Hub
+      </a>
+     </li>
+     <li>
+      <a href="about.html">
+       About
+      </a>
+     </li>
+     <li>
+      <a href="contact.html">
+       Contact
+      </a>
+     </li>
+    </ul>
+   </nav>
+  </header>
+  <section>
+   <h2>
+    Search Scam Reports
+   </h2>
+   <input id="searchInput" placeholder="Search by company name..." type="text"/>
+   <div id="scamList">
+   </div>
+  </section>
+  <script>
+   const scamList = document.getElementById('scamList');
         const searchInput = document.getElementById('searchInput');
 
         async function fetchScams(query = '') {
@@ -64,7 +94,11 @@
 
         // Load on page load
         fetchScams();
-    </script>
-</body>
-
+  </script>
+  <footer>
+   <p>
+    © 2025 Job Scam Awareness. All rights reserved.
+   </p>
+  </footer>
+ </body>
 </html>

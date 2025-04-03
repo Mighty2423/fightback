@@ -1,38 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Report a Scam</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<header>
-    <h1>Report ScamForm</h1>
-    <nav>
-        <ul>
-            <li><a href="../index.html">Home</a></li>
-            <li><a href="report_scam.html">Report a Scam</a></li>
-            <li><a href="scam_database.html">Scam Database</a></li>
-            <li><a href="resources.html">Resources</a></li>
-            <li><a href="consulting_hub.html">Consulting</a></li>
-            <li><a href="about.html">About</a></li>
-        </ul>
-    </nav>
-</header>
-<body>
-    <h1>Report a Scam</h1>
-
-    <form id="scamForm">
-        <label>Company Name: <input type="text" name="company_name" required></label><br>
-        <label>Job Details: <input type="text" name="job_details"></label><br>
-        <label>Description:<br><textarea name="description" required></textarea></label><br>
-        <button type="submit">Submit Report</button>
-    </form>
-
-    <p id="status"></p>
-
-    <script>
-        const API_URL = 'http://54.92.184.220:3000'; // ← replace this
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Report a Scam
+  </title>
+  <link href="css/styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <header>
+   <h1>
+    Job Scam Awareness
+   </h1>
+   <nav>
+    <ul>
+     <li>
+      <a href="index.html">
+       Home
+      </a>
+     </li>
+     <li>
+      <a href="report_scam.html">
+       Report a Scam
+      </a>
+     </li>
+     <li>
+      <a href="database.html">
+       Scam Database
+      </a>
+     </li>
+     <li>
+      <a href="resources.html">
+       Resources
+      </a>
+     </li>
+     <li>
+      <a href="consulting_hub.html">
+       Consulting Hub
+      </a>
+     </li>
+     <li>
+      <a href="about.html">
+       About
+      </a>
+     </li>
+     <li>
+      <a href="contact.html">
+       Contact
+      </a>
+     </li>
+    </ul>
+   </nav>
+  </header>
+  <h1>
+   Report a Scam
+  </h1>
+  <form id="scamForm">
+   <label>
+    Company Name:
+    <input name="company_name" required="" type="text"/>
+   </label>
+   <br/>
+   <label>
+    Job Details:
+    <input name="job_details" type="text"/>
+   </label>
+   <br/>
+   <label>
+    Description:
+    <br/>
+    <textarea name="description" required=""></textarea>
+   </label>
+   <br/>
+   <button type="submit">
+    Submit Report
+   </button>
+  </form>
+  <p id="status">
+  </p>
+  <script>
+   const API_URL = 'http://54.92.184.220:3000'; // ← replace this
 
         document.getElementById('scamForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -59,9 +106,11 @@
                 document.getElementById('status').textContent = 'Failed to submit report.';
             }
         });
-    </script>
-</body>
-<footer>
-    <p>&copy; 2025 Job Scam Awareness. Built with ❤️ and AWS.</p>
-</footer>
+  </script>
+  <footer>
+   <p>
+    © 2025 Job Scam Awareness. All rights reserved.
+   </p>
+  </footer>
+ </body>
 </html>
