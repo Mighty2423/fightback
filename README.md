@@ -41,18 +41,18 @@ C:\Users\alton\source\fightback
 │   ├── css
 │   │   └── styles.css
 │   ├── Dockerfile
-│   ├── index.html
+
 │   ├── js
 │   │   ├── scam-reports.js  # Fetch and display scam reports
 │   │   ├── consulting.js  # Fetch and display consulting content
 │   │   └── script.js
-│   └── pages
-│       ├── about.html
-│       ├── report_scam.html
-│       ├── consulting_hub.html
-│       ├── resources.html
-│       ├── scam_database.html
-│       └── contact.html
+│   ├── index.html
+│   ├── about.html
+│   ├── report_scam.html
+│   ├── consulting_hub.html
+│   ├── resources.html
+│   ├── scam_database.html
+│   └── contact.html
 └── README.md
 ```
 
