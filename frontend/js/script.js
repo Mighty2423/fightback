@@ -9,7 +9,6 @@ if (window.location.pathname.includes("report_scam.html")) {
             e.preventDefault();
 
             const company = document.getElementById("company").value;
-            const contact = document.getElementById("contact").value;
             const description = document.getElementById("description").value;
 
             const payload = {
